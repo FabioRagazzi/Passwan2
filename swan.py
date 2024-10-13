@@ -3,9 +3,17 @@ from Functions import *
 from tkinter import Tk, Label, Entry, Button, Toplevel, ttk, StringVar, \
     IntVar, Checkbutton, Frame, Canvas, Scrollbar
 
-# Read the JSON files
-PASSWORDS = read_json_file("PASSWORDS.json", [])
-CHARACTER_SETS = read_json_file("CHARACTER_SETS.json", {})
+# # Read the JSON files
+# PASSWORDS = read_json_file("PASSWORDS.json", [])
+# CHARACTER_SETS = read_json_file("CHARACTER_SETS.json", {})
+
+# Read from online DB
+PASSWORDS = db_PASSWORDS.get()
+CHARACTER_SETS = db_CHARACTER_SETS.get()
+if PASSWORDS is None:
+    PASSWORDS = []
+if CHARACTER_SETS is None:
+    CHARACTER_SETS = {}
 
 # List of all the special characters available
 Special_Characters = ["`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
@@ -130,7 +138,8 @@ def add_modify_password(window, name, email, extra, version, charcater_set, num_
         PASSWORDS[index] = new_password_dict
 
     PASSWORDS.sort(key=lambda x: x['name'].lower())
-    write_json_file("PASSWORDS.json", PASSWORDS)
+    # write_json_file("PASSWORDS.json", PASSWORDS)
+    db_PASSWORDS.set(PASSWORDS)
     close_new_window(window)
 
 
@@ -148,7 +157,8 @@ def confirm_new_character_set(window, set_name, bool_a_z, bool_capa_capz, bool_0
     new_set.extend([char for char, bool_var in zip(Special_Characters, bool_special_characters) if bool_var.get() == 1])
 
     CHARACTER_SETS[set_name] = new_set
-    write_json_file("CHARACTER_SETS.json", CHARACTER_SETS)
+    # write_json_file("CHARACTER_SETS.json", CHARACTER_SETS)
+    db_CHARACTER_SETS.set(CHARACTER_SETS)
     close_new_window(window)
 
 
