@@ -4,6 +4,9 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+PATH_OF_DATA = "G:/My Drive/PROGETTI_PERSONALI/Passwan2/"
+PATH_TO_ICON = "C:/Users/Faz98/Pictures/passwan2.ico"
+
 cred = credentials.Certificate(r"C:\Users\Faz98\Downloads\passwan-328c1-firebase-adminsdk-cvu0a-c74cd7ed53.json")
 firebase_admin.initialize_app(cred,
                               {'databaseURL': 'https://passwan-328c1-default-rtdb.europe-west1.firebasedatabase.app/'})
@@ -11,26 +14,37 @@ db_PASSWORDS = db.reference('PASSWORDS')
 db_CHARACTER_SETS = db.reference('CHARACTER_SETS')
 
 
+def get_index(my_list, element):
+    return my_list.index(element)
+
+
 def increment_string(num_str):
     num = int(num_str)+1
     return str(num % 10)
 
 
+def decrement_string(num_str):
+    num = int(num_str)-1
+    if num == -1:
+        num = 9
+    return str(num)
+
+
 def read_json_file(file_path, default_value):
     try:
-        with open(file_path, 'r') as file:
+        with open(PATH_OF_DATA+file_path, 'r') as file:
             data = json.load(file)  # Parse JSON data
     except json.JSONDecodeError:
         data = default_value
     except FileNotFoundError:
         data = default_value
-        with open(file_path, 'w') as file:
+        with open(PATH_OF_DATA+file_path, 'w') as _:
             pass
     return data
 
 
 def write_json_file(file_path, data):
-    with open(file_path, 'w') as file:
+    with open(PATH_OF_DATA+file_path, 'w') as file:
         json.dump(data, file, indent=4)
 
 

@@ -125,7 +125,7 @@ def create_modify_password_window(index):
 
 
 def add_modify_password(window, name, email, extra, version, charcater_set, num_id, index):
-    # index is -1 for adding and an integer fro modify
+    # index is -1 for adding and an integer for modify
     new_password_dict = {"name": name,
                          "e_mail": email,
                          "password_id": id_num_to_str(num_id),
