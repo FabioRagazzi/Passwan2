@@ -1,0 +1,6 @@
+MODE = "JSON"
+
+PATH_OF_DATA = "G:/My Drive/PROGETTI_PERSONALI/Passwan2/"
+
+db_PASSWORDS = ""
+db_CHARACTERS_SETS = ""

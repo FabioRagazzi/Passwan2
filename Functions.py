@@ -1,17 +1,17 @@
-import json
 import os
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
+import json
+from Work_in_json_mode import *
 
-PATH_OF_DATA = "G:/My Drive/PROGETTI_PERSONALI/Passwan2/"
-PATH_TO_ICON = "C:/Users/Faz98/Pictures/passwan2.ico"
+# You can specify here the path of the .ico file that will be the icon of your application
+PATH_TO_ICON = "passwan2.ico"
 
-cred = credentials.Certificate(r"C:\Users\Faz98\Downloads\passwan-328c1-firebase-adminsdk-cvu0a-c74cd7ed53.json")
-firebase_admin.initialize_app(cred,
-                              {'databaseURL': 'https://passwan-328c1-default-rtdb.europe-west1.firebasedatabase.app/'})
-db_PASSWORDS = db.reference('PASSWORDS')
-db_CHARACTER_SETS = db.reference('CHARACTER_SETS')
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# DO NOT MODIFY UNDER HERE !!!!
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 def get_index(my_list, element):

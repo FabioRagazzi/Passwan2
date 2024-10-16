@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import messagebox, IntVar, StringVar
 from AES import *
 from Functions import *
 import customtkinter
@@ -8,9 +8,18 @@ Special_Characters = ["`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")"
                       "_", "-", "+", "=", "{", "}", "[", "]", "|", ":", ";", "'",
                       "<", ">", ",", ".", "?", "/"]
 
-# Read the JSON files
-PASSWORDS = read_json_file("PASSWORDS.json", [])
-CHARACTERS_SETS = read_json_file("CHARACTERS_SETS.json", {})
+if MODE == "JSON":
+    # Read the JSON files
+    PASSWORDS = read_json_file("PASSWORDS.json", [])
+    CHARACTERS_SETS = read_json_file("CHARACTERS_SETS.json", {})
+elif MODE == "DATABASE":
+    # Read from online DB
+    PASSWORDS = db_PASSWORDS.get()
+    CHARACTERS_SETS = db_CHARACTERS_SETS.get()
+    if PASSWORDS is None:
+        PASSWORDS = []
+    if CHARACTERS_SETS is None:
+        CHARACTERS_SETS = {}
 
 
 def create_modify_password_window(index):
@@ -207,41 +216,55 @@ def create_new_character_set():
 
 
 def add_modify_password(window, name, email, extra, version, charcater_set, num_id, index):
-    # index is -1 for adding and an integer for modify
-    new_password_dict = {"name": name,
-                         "e_mail": email,
-                         "password_id": id_num_to_str(num_id),
-                         "version": version,
-                         "characters_list": charcater_set,
-                         "extra": extra}
-    if index == -1:  # adding
-        PASSWORDS.append(new_password_dict)
-    else:  # modify
-        PASSWORDS[index] = new_password_dict
+    if (not name) or (not charcater_set):
+        messagebox.showerror("Error", "An Account needs at least a Name and a Characters Set")
+    elif (name in [p.get("name") for p in PASSWORDS]) and (index == -1):
+        messagebox.showerror("Error", "An Account with the same name already exists")
+    else:
+        # index is -1 for adding and an integer for modify
+        new_password_dict = {"name": name,
+                             "e_mail": email,
+                             "password_id": id_num_to_str(num_id),
+                             "version": version,
+                             "characters_list": charcater_set,
+                             "extra": extra}
+        if index == -1:  # adding
+            PASSWORDS.append(new_password_dict)
+        else:  # modify
+            PASSWORDS[index] = new_password_dict
 
-    PASSWORDS.sort(key=lambda x: x['name'].lower())
-    write_json_file("PASSWORDS.json", PASSWORDS)
-    # db_PASSWORDS.set(PASSWORDS)
-    close_new_window(window)
+        PASSWORDS.sort(key=lambda x: x['name'].lower())
+        if MODE == "JSON":
+            write_json_file("PASSWORDS.json", PASSWORDS)
+        elif MODE == "DATABASE":
+            db_PASSWORDS.set(PASSWORDS)
+        close_new_window(window)
 
 
 def confirm_new_character_set(window, set_name, bool_a_z, bool_capa_capz, bool_0_9, bool_special_characters):
-    new_set = []
-    if bool_a_z:
-        new_set.extend(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r",
-                        "s", "t", "u", "v", "w", "x", "y", "z"])
-    if bool_capa_capz:
-        new_set.extend(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-                        "S", "T", "U", "V", "W", "X", "Y", "Z"])
-    if bool_0_9:
-        new_set.extend(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
+    if (not set_name) or not (any(bool_var.get() == 1 for bool_var in bool_special_characters) or bool_a_z or bool_0_9 or bool_capa_capz):
+        messagebox.showerror("Error", "A Characters Set needs a name and at least one character")
+    elif set_name in list(CHARACTERS_SETS.keys()):
+        messagebox.showerror("Error", "A Characters Set with the same name already exists")
+    else:
+        new_set = []
+        if bool_a_z:
+            new_set.extend(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r",
+                            "s", "t", "u", "v", "w", "x", "y", "z"])
+        if bool_capa_capz:
+            new_set.extend(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+                            "S", "T", "U", "V", "W", "X", "Y", "Z"])
+        if bool_0_9:
+            new_set.extend(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
 
-    new_set.extend([char for char, bool_var in zip(Special_Characters, bool_special_characters) if bool_var.get() == 1])
+        new_set.extend([char for char, bool_var in zip(Special_Characters, bool_special_characters) if bool_var.get() == 1])
 
-    CHARACTERS_SETS[set_name] = new_set
-    write_json_file("CHARACTERS_SETS.json", CHARACTERS_SETS)
-    # db_CHARACTERS_SETS.set(CHARACTERS_SETS)
-    close_new_window(window)
+        CHARACTERS_SETS[set_name] = new_set
+        if MODE == "JSON":
+            write_json_file("CHARACTERS_SETS.json", CHARACTERS_SETS)
+        elif MODE == "DATABASE":
+            db_CHARACTERS_SETS.set(CHARACTERS_SETS)
+        close_new_window(window)
 
 
 def close_new_window(new_window):
@@ -255,6 +278,7 @@ def close_new_window(new_window):
 
 
 def account_combobox_selected(choice):
+    root.focus()
     index = get_index(Combobox_account.cget("values"), choice)
     Button_modify_password.configure(state='normal')
     selected_password = PASSWORDS[index]
