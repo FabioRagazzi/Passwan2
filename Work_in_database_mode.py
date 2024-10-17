@@ -6,8 +6,13 @@ MODE = "DATABASE"
 
 PATH_OF_DATA = ""
 
-cred = credentials.Certificate(r"C:\Users\Faz98\Downloads\passwan-328c1-firebase-adminsdk-cvu0a-c74cd7ed53.json")
+
+# You will need to paste your certificate path and the database url in the next two path,
+# instead of the fictional ones given as example
+cred = credentials.Certificate("C:/Users/Mario/Downloads/long_name_with_strange_latters_and_numbers.json")
 firebase_admin.initialize_app(cred,
-                              {'databaseURL': 'https://passwan-328c1-default-rtdb.europe-west1.firebasedatabase.app/'})
+                              {'databaseURL': 'https://url_of_your_db.firebase_something.something_else/'})
+
+
 db_PASSWORDS = db.reference('PASSWORDS')
 db_CHARACTERS_SETS = db.reference('CHARACTERS_SETS')

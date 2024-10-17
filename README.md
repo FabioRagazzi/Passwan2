@@ -2,9 +2,13 @@
 
 ## Installation on Windows
 ### Getting the code
-This is a passward manager application. If you want to use, 
+This is a password manager application. 
+
+If you want to use it, 
 the first thing to do is to install python.
 You can do it from the page: [Install Python](https://www.python.org/downloads/).
+Please note that the most recent release might not work, and you will need to download a previous one.
+
 Remember to check the option **add to PATH** during the installation process.
 
 Once you have python, you can download the code from this repository by clicking
@@ -17,7 +21,10 @@ cd <path/of/your/project>
 ```
 git clone https://github.com/FabioRagazzi/Passwan2.git
 ```
-Please not that in order to do that you will need *git* installed on your computer.
+Please note that in order to do that you will need *git* installed on your computer.
+
+Also, be aware of the fact that `<path/of/your/project>` is a token, you need to replace it with
+the actual path of your project.
 
 To open your terminal you can:
 - Press **Windows** + **R**
@@ -55,26 +62,15 @@ To change the icon of a file you need to:
 - Click on **Change Icon...**
 - Browse your desired **.ico** file
 
-### Final Set Up
-The code can work in two different modes. The default mode will store your data
-inside some `.json` files. You need to specify the directory where those files will be saved.
-A good choice could be some directory with a back-up on the cloud 
-(for example with **OneDrive** or **Google Drive** or whatever).
-Once you have chosen your directory, copy its path and paste it (enclosed in quotation marks) in the file `Work_in_json_mode.py`
-after the equal sign that follows **PATH_OF_DATA**. You should obtain something like this:
-```python
-PATH_OF_DATA = "G:/My Drive/Mario/BackUp/Passwan Data/"
-```
-Note that the `/` character before closing the quotation marks is essential.
-Also note that the path provided above is completely fictional.
-
 ### Running Passwan 2.0
 If you completed the above steps, you can lunch the application just by double-clicking on the
 shortcut to the file `run.vbs` you previously created.
 
+If you have an antivirus, it might complain about the execution of such file.
+
 ## How to use Passwan
 ### Creating Characters Sets
-In order to start generating passwords you will first need to create some **Characters Sets**.
+In order to start generating passwords, you will first need to create some **Characters Sets**.
 They are just a list of all the allowed characters for your password. 
 
 This is needed because different 
@@ -121,8 +117,34 @@ To do that, just select the account you want to modify and
 click on **Modify Account**. A window will open that will allow you to modify
 whatever information you want.
 
-## DataBase Mode
-Bla Bla Bla ...
+## Working Modes
+
+### Json Mode
+The code can work in two different modes. The default mode will store your data
+inside some `.json` files. You can to specify the directory where those files will be saved (the default is
+the same directory of ypur project, and if you are happy with it, you can leave it like that).
+
+If you want to change the path, a good choice could be some directory with a back-up on the cloud 
+(for example with **OneDrive** or **Google Drive** or whatever).
+Once you have chosen your directory, copy its path and paste it (enclosed in quotation marks) in the file `Work_in_json_mode.py`
+after the equal sign that follows **PATH_OF_DATA**. You should obtain something like this:
+```python
+PATH_OF_DATA = "G:/My Drive/Mario/BackUp/Passwan Data/"
+```
+Note that the `/` character before closing the quotation marks is essential.
+Also note that the path provided above is completely fictional.
+
+
+### DataBase Mode
+You can store the data needed for the application to work in a Firebase real time database.
+To do that you will need first to create a database, and then generate a certificate with your credentials. 
+Save the certificate in your computer and then paste its path in the file `Work_in_database_mode.py`.
+In the same file you will also need to paste the url of your database.
+This video [Firebase with Python](https://www.youtube.com/watch?v=BnrkTpgH5Vc) can help you to set up your database.
+
+You will also need to replace the name ***Work_in_json_mode*** with 
+***Work_in_database_mode*** in the third row of the file `Functions.py`
+if you want to use the real time database.
 
 ## Advantages of Using Passwan 2.0
 Using Passwan 2.0, you will need to remember just one password, but at the same time
