@@ -157,3 +157,11 @@ The files that the application saves don't contain your passwords, but just the 
 needed to generate them. Those files are useless without your master password. 
 You could send them to everyone without any problem.
 This grants maximum safety.
+
+## Acknowledgments
+- **Yuliya Murakami**, for trying to test this application but ending up testing the previous version instead 
+(much uglier and difficult to use)
+- **Arturo Popoli**, for creating such a great name for this application
+- **Elisa Ragazzi**, for spending some time trying to install this application following my instructions
+(which resulted in finding herself with an impossible-to-delete file on her computer)
+

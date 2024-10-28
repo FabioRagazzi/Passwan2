@@ -1,19 +1,33 @@
 from tkinter import messagebox, IntVar, StringVar
+from PIL import Image
 from AES import *
 from Functions import *
 import customtkinter
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 
 # List of all the special characters available
 Special_Characters = ["`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
                       "_", "-", "+", "=", "{", "}", "[", "]", "|", ":", ";", "'",
                       "<", ">", ",", ".", "?", "/"]
 
-if MODE == "JSON":
+# Loading the settings
+with open("SETTINGS.json", 'r') as settings_file:
+    SETTINGS = json.load(settings_file)
+
+if SETTINGS["MODE"] == "JSON":
     # Read the JSON files
-    PASSWORDS = read_json_file("PASSWORDS.json", [])
-    CHARACTERS_SETS = read_json_file("CHARACTERS_SETS.json", {})
-elif MODE == "DATABASE":
+    PASSWORDS = read_json_file(SETTINGS["PATH_OF_JSON_DATA"]+"PASSWORDS.json", [])
+    CHARACTERS_SETS = read_json_file(SETTINGS["PATH_OF_JSON_DATA"]+"CHARACTERS_SETS.json", {})
+elif SETTINGS["MODE"] == "DATABASE":
     # Read from online DB
+    cred = credentials.Certificate(SETTINGS["PATH_OF_CERTIFICATE"])
+    firebase_admin.initialize_app(cred,
+                                  {'databaseURL': SETTINGS["DATABASE_URL"]})
+
+    db_PASSWORDS = db.reference('PASSWORDS')
+    db_CHARACTERS_SETS = db.reference('CHARACTERS_SETS')
     PASSWORDS = db_PASSWORDS.get()
     CHARACTERS_SETS = db_CHARACTERS_SETS.get()
     if PASSWORDS is None:
@@ -21,6 +35,13 @@ elif MODE == "DATABASE":
     if CHARACTERS_SETS is None:
         CHARACTERS_SETS = {}
 
+
+def settings_window():
+    sw = customtkinter.CTkToplevel(root)  # settings window
+    sw.title("Settings")
+    sw.resizable(False, False)
+    sw.protocol("WM_DELETE_WINDOW", lambda: close_new_window(sw))
+    root.state('withdrawn')
 
 def create_modify_password_window(index):
     npw = customtkinter.CTkToplevel(root)  # new password window
@@ -41,10 +62,15 @@ def create_modify_password_window(index):
     frame_1 = customtkinter.CTkFrame(npw)
     frame_1.pack(expand=1, fill="both")
 
-    label_name = customtkinter.CTkLabel(frame_1, text="Name:", anchor="e", width=NEW_PASS_LABEL_WIDTH)
+    label_name = customtkinter.CTkLabel(frame_1,
+                                        text="Name:",
+                                        anchor="e",
+                                        width=NEW_PASS_LABEL_WIDTH,
+                                        height=LINE_HEIGHT
+                                        )
     label_name.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-    entry_name = customtkinter.CTkEntry(frame_1, width=WIDTH)
+    entry_name = customtkinter.CTkEntry(frame_1, width=WIDTH, height=LINE_HEIGHT)
     entry_name.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
     if index != -1:
         entry_name.insert(0, PASSWORDS[index].get("name"))
@@ -53,10 +79,15 @@ def create_modify_password_window(index):
     frame_2 = customtkinter.CTkFrame(npw)
     frame_2.pack(expand=1, fill="both")
 
-    label_email = customtkinter.CTkLabel(frame_2, text="Email:", anchor="e", width=NEW_PASS_LABEL_WIDTH)
+    label_email = customtkinter.CTkLabel(frame_2,
+                                         text="Email:",
+                                         anchor="e",
+                                         width=NEW_PASS_LABEL_WIDTH,
+                                         height=LINE_HEIGHT
+                                         )
     label_email.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-    entry_email = customtkinter.CTkEntry(frame_2, width=WIDTH)
+    entry_email = customtkinter.CTkEntry(frame_2, width=WIDTH, height=LINE_HEIGHT)
     entry_email.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
     if index != -1:
         entry_email.insert(0, PASSWORDS[index].get("e_mail"))
@@ -65,10 +96,15 @@ def create_modify_password_window(index):
     frame_3 = customtkinter.CTkFrame(npw)
     frame_3.pack(expand=1, fill="both")
 
-    label_extra = customtkinter.CTkLabel(frame_3, text="Extra:", anchor="e", width=NEW_PASS_LABEL_WIDTH)
+    label_extra = customtkinter.CTkLabel(frame_3,
+                                         text="Extra:",
+                                         anchor="e",
+                                         width=NEW_PASS_LABEL_WIDTH,
+                                         height=LINE_HEIGHT
+                                         )
     label_extra.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-    entry_extra = customtkinter.CTkEntry(frame_3, width=WIDTH)
+    entry_extra = customtkinter.CTkEntry(frame_3, width=WIDTH, height=LINE_HEIGHT)
     entry_extra.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
     if index != -1:
         entry_extra.insert(0, PASSWORDS[index].get("extra"))
@@ -77,20 +113,40 @@ def create_modify_password_window(index):
     frame_4 = customtkinter.CTkFrame(npw)
     frame_4.pack(expand=1, fill="both")
 
-    label_version = customtkinter.CTkLabel(frame_4, text="Version:", anchor="e", width=NEW_PASS_LABEL_WIDTH)
+    label_version = customtkinter.CTkLabel(frame_4,
+                                           text="Version:",
+                                           anchor="e",
+                                           width=NEW_PASS_LABEL_WIDTH,
+                                           height=LINE_HEIGHT
+                                           )
     label_version.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
     if index == -1:
         version_string_var.set("0")
     else:
         version_string_var.set(PASSWORDS[index].get("version"))
-    entry_version = customtkinter.CTkEntry(frame_4, width=100, state="readonly", textvariable=version_string_var)
+    entry_version = customtkinter.CTkEntry(frame_4,
+                                           width=WIDTH-2*INC_DEC_WIDTH-10,
+                                           height=LINE_HEIGHT,
+                                           state="readonly",
+                                           textvariable=version_string_var
+                                           )
     entry_version.grid(row=0, column=1, padx=[5, 5], pady=PADY)
 
-    button_decrement = customtkinter.CTkButton(frame_4, text="<<<", width=95, command=decrement_button_pressed)
+    button_decrement = customtkinter.CTkButton(frame_4,
+                                               text="<<<",
+                                               width=INC_DEC_WIDTH,
+                                               height=LINE_HEIGHT,
+                                               command=decrement_button_pressed
+                                               )
     button_decrement.grid(row=0, column=2, padx=[0, 5], pady=PADY)
 
-    button_increment = customtkinter.CTkButton(frame_4, text=">>>", width=95, command=increment_button_pressed)
+    button_increment = customtkinter.CTkButton(frame_4,
+                                               text=">>>",
+                                               width=INC_DEC_WIDTH,
+                                               height=LINE_HEIGHT,
+                                               command=increment_button_pressed
+                                               )
     button_increment.grid(row=0, column=3, padx=[0, PADX], pady=PADY)
 
     # # Frame 5 # # # # # # # # # # # #  # # # # # # # # # # #  # # # # # # # # # # #
@@ -100,11 +156,14 @@ def create_modify_password_window(index):
     label_character_set = customtkinter.CTkLabel(frame_5,
                                                  text="Characters Set:",
                                                  anchor="e",
-                                                 width=NEW_PASS_LABEL_WIDTH)
+                                                 width=NEW_PASS_LABEL_WIDTH,
+                                                 height=LINE_HEIGHT
+                                                 )
     label_character_set.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
     cbb_characters_list = customtkinter.CTkComboBox(frame_5,
                                                     width=WIDTH,
+                                                    height=LINE_HEIGHT,
                                                     state="readonly",
                                                     values=list(CHARACTERS_SETS.keys())
                                                     )
@@ -117,6 +176,7 @@ def create_modify_password_window(index):
     frame_6.pack(expand=1, fill="both")
 
     button_add_modify_password = customtkinter.CTkButton(frame_6,
+                                                         height=LINE_HEIGHT,
                                                          text="Add" if index == -1 else "Modify",
                                                          command=lambda: add_modify_password(npw,
                                                                                              entry_name.get(),
@@ -141,10 +201,10 @@ def create_new_character_set():
     frame_1 = customtkinter.CTkFrame(ncsw)
     frame_1.pack(expand=1, fill="both")
 
-    label_name = customtkinter.CTkLabel(frame_1, text="Name:", anchor="e")
+    label_name = customtkinter.CTkLabel(frame_1, text="Name:", anchor="e", height=LINE_HEIGHT)
     label_name.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-    entry_name = customtkinter.CTkEntry(frame_1, width=WIDTH)
+    entry_name = customtkinter.CTkEntry(frame_1, width=WIDTH, height=LINE_HEIGHT)
     entry_name.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
 
     # # Scrollable Frame # # # # # # # # # # # #  # # # # # # # # # # #  # # # # # # # # # # #
@@ -205,6 +265,7 @@ def create_new_character_set():
     button_confirm_new_character_set = \
         customtkinter.CTkButton(frame_3,
                                 text="Add",
+                                height=LINE_HEIGHT,
                                 command=lambda: confirm_new_character_set(ncsw,
                                                                           entry_name.get(),
                                                                           bool_az.get(),
@@ -234,9 +295,9 @@ def add_modify_password(window, name, email, extra, version, charcater_set, num_
             PASSWORDS[index] = new_password_dict
 
         PASSWORDS.sort(key=lambda x: x['name'].lower())
-        if MODE == "JSON":
-            write_json_file("PASSWORDS.json", PASSWORDS)
-        elif MODE == "DATABASE":
+        if SETTINGS["MODE"] == "JSON":
+            write_json_file(SETTINGS["PATH_OF_JSON_DATA"]+"PASSWORDS.json", PASSWORDS)
+        elif SETTINGS["MODE"] == "DATABASE":
             db_PASSWORDS.set(PASSWORDS)
         close_new_window(window)
 
@@ -260,9 +321,9 @@ def confirm_new_character_set(window, set_name, bool_a_z, bool_capa_capz, bool_0
         new_set.extend([char for char, bool_var in zip(Special_Characters, bool_special_characters) if bool_var.get() == 1])
 
         CHARACTERS_SETS[set_name] = new_set
-        if MODE == "JSON":
-            write_json_file("CHARACTERS_SETS.json", CHARACTERS_SETS)
-        elif MODE == "DATABASE":
+        if SETTINGS["MODE"] == "JSON":
+            write_json_file(SETTINGS["PATH_OF_JSON_DATA"]+"CHARACTERS_SETS.json", CHARACTERS_SETS)
+        elif SETTINGS["MODE"] == "DATABASE":
             db_CHARACTERS_SETS.set(CHARACTERS_SETS)
         close_new_window(window)
 
@@ -308,6 +369,14 @@ def get_password(pass_text, key_text, char_list):
     return state_to_text(crypt(pass_state, key_state), char_list)
 
 
+def on_button_view_press(_):
+    Entry_main_password.configure(show="")
+
+
+def on_button_view_release(_):
+    Entry_main_password.configure(show="*")
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -321,7 +390,7 @@ customtkinter.set_default_color_theme("blue")
 
 root = customtkinter.CTk()
 root.title("PASSWAN")
-root.iconbitmap(PATH_TO_ICON)
+root.iconbitmap("passwan2.ico")
 root.resizable(False, False)
 
 # StringVars
@@ -330,52 +399,104 @@ extra_string_var = StringVar()
 version_string_var = StringVar()
 
 # General constants
-WIDTH = 300
+WIDTH = 350
 LABEL_WIDTH = 100
 NEW_PASS_LABEL_WIDTH = 90
 PADX = 15
 PADY = 5
 CHECK_BUTTONS_WIDTH = 60
+LINE_HEIGHT = 30
+BUTTON_VIEW_WIDTH = 35
+INC_DEC_WIDTH = 95
+
+# Image
+eye_image = Image.open("eye.png")
+
+# Settings Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+Frame_settings = customtkinter.CTkFrame(root)
+Frame_settings.pack(expand=1, fill="both")
+
+Button_Settings = customtkinter.CTkButton(Frame_settings,
+                                          height=LINE_HEIGHT,
+                                          text="Settings",
+                                          command=settings_window
+                                          )
+Button_Settings.pack(fill="both", padx=1, pady=(1, 2*PADY))
 
 # First Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 Frame_First_Row = customtkinter.CTkFrame(root)
 Frame_First_Row.pack(expand=1, fill="both")
 
-Label_main_password = customtkinter.CTkLabel(Frame_First_Row, text="Master Password:", anchor="e", width=LABEL_WIDTH)
+Label_main_password = customtkinter.CTkLabel(Frame_First_Row,
+                                             text="Master Password:",
+                                             anchor="e",
+                                             width=LABEL_WIDTH,
+                                             height=LINE_HEIGHT
+                                             )
 Label_main_password.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-Entry_main_password = customtkinter.CTkEntry(Frame_First_Row, width=WIDTH, show='*')
-Entry_main_password.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
+Entry_main_password = customtkinter.CTkEntry(Frame_First_Row,
+                                             width=WIDTH - BUTTON_VIEW_WIDTH - 7,
+                                             show='*',
+                                             height=LINE_HEIGHT
+                                             )
+Entry_main_password.grid(row=0, column=1, padx=[5, 0], pady=PADY)
+
+Button_view = customtkinter.CTkButton(Frame_First_Row,
+                                      text="",
+                                      image=customtkinter.CTkImage(light_image=eye_image),
+                                      width=BUTTON_VIEW_WIDTH,
+                                      height=LINE_HEIGHT
+                                      )
+Button_view.grid(row=0, column=2, padx=[5, PADX], pady=PADY, ipadx=0, ipady=0)
+Button_view.bind("<ButtonPress-1>", on_button_view_press)
+Button_view.bind("<ButtonRelease-1>", on_button_view_release)
 
 # Second Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 Frame_Second_Row = customtkinter.CTkFrame(root)
 Frame_Second_Row.pack(expand=1, fill="both")
 
-Label_email = customtkinter.CTkLabel(Frame_Second_Row, text="Email:", anchor="e", width=LABEL_WIDTH)
+Label_email = customtkinter.CTkLabel(Frame_Second_Row,
+                                     text="Email:",
+                                     anchor="e",
+                                     width=LABEL_WIDTH,
+                                     height=LINE_HEIGHT)
 Label_email.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-Entry_email = customtkinter.CTkEntry(Frame_Second_Row, width=WIDTH, state="readonly", textvariable=email_string_var)
+Entry_email = customtkinter.CTkEntry(Frame_Second_Row,
+                                     width=WIDTH,
+                                     height=LINE_HEIGHT,
+                                     state="readonly",
+                                     textvariable=email_string_var)
 Entry_email.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
 
 # Third Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 Frame_Third_Row = customtkinter.CTkFrame(root)
 Frame_Third_Row.pack(expand=1, fill="both")
 
-Label_extra = customtkinter.CTkLabel(Frame_Third_Row, text="Extra:", anchor="e", width=LABEL_WIDTH)
+Label_extra = customtkinter.CTkLabel(Frame_Third_Row, text="Extra:", anchor="e", width=LABEL_WIDTH, height=LINE_HEIGHT)
 Label_extra.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
-Entry_extra = customtkinter.CTkEntry(Frame_Third_Row, width=WIDTH, state="readonly", textvariable=extra_string_var)
+Entry_extra = customtkinter.CTkEntry(Frame_Third_Row,
+                                     width=WIDTH,
+                                     state="readonly",
+                                     textvariable=extra_string_var,
+                                     height=LINE_HEIGHT)
 Entry_extra.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
 
 # Fourth Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 Frame_Fourth_Row = customtkinter.CTkFrame(root)
 Frame_Fourth_Row.pack(expand=1, fill="both")
 
-Label_combobox = customtkinter.CTkLabel(Frame_Fourth_Row, text="Account:", anchor="e", width=LABEL_WIDTH)
+Label_combobox = customtkinter.CTkLabel(Frame_Fourth_Row,
+                                        text="Account:", anchor="e",
+                                        width=LABEL_WIDTH,
+                                        height=LINE_HEIGHT)
 Label_combobox.grid(row=0, column=0, padx=[PADX, 0], pady=PADY)
 
 Combobox_account = customtkinter.CTkComboBox(Frame_Fourth_Row,
                                              width=WIDTH,
+                                             height=LINE_HEIGHT,
                                              state="readonly",
                                              values=[p.get("name") for p in PASSWORDS],
                                              command=account_combobox_selected
@@ -385,25 +506,31 @@ Combobox_account.grid(row=0, column=1, padx=[5, PADX], pady=PADY)
 # Buttons Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 Frame_Buttons_Row = customtkinter.CTkFrame(root)
 Frame_Buttons_Row.pack(expand=1, fill="both")
+Frame_Buttons_Row.grid_columnconfigure(0, weight=1)
+Frame_Buttons_Row.grid_columnconfigure(1, weight=1)
+Frame_Buttons_Row.grid_columnconfigure(2, weight=1)
 
 Button_modify_password = \
     customtkinter.CTkButton(Frame_Buttons_Row,
                             text="Modify Account",
+                            height=LINE_HEIGHT,
                             command=lambda: create_modify_password_window(
                                 get_index(Combobox_account.cget("values"), Combobox_account.get())),
                             state="disabled")
-Button_modify_password.grid(row=0, column=0, padx=[PADX, 5], pady=PADY)
+Button_modify_password.grid(row=0, column=0, padx=[PADX, 5], pady=PADY, sticky="nsew")
 
 Button_new_password = customtkinter.CTkButton(Frame_Buttons_Row,
                                               text="New Account",
+                                              height=LINE_HEIGHT,
                                               command=lambda: create_modify_password_window(-1)
                                               )
-Button_new_password.grid(row=0, column=1, padx=[5, 5], pady=PADY)
+Button_new_password.grid(row=0, column=1, padx=[5, 5], pady=PADY, sticky="nsew")
 
 Button_new_character_set = customtkinter.CTkButton(Frame_Buttons_Row,
                                                    text="New Characters Set",
+                                                   height=LINE_HEIGHT,
                                                    command=create_new_character_set
                                                    )
-Button_new_character_set.grid(row=0, column=2, padx=[5, PADX], pady=PADY)
+Button_new_character_set.grid(row=0, column=2, padx=[5, PADX], pady=PADY, sticky="nsew")
 
 root.mainloop()

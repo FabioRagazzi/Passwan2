@@ -1,17 +1,5 @@
 import os
 import json
-from Work_in_json_mode import *
-
-# You can specify here the path of the .ico file that will be the icon of your application
-PATH_TO_ICON = "passwan2.ico"
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# DO NOT MODIFY UNDER HERE !!!!
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 def get_index(my_list, element):
@@ -32,19 +20,19 @@ def decrement_string(num_str):
 
 def read_json_file(file_path, default_value):
     try:
-        with open(PATH_OF_DATA+file_path, 'r') as file:
+        with open(file_path, 'r') as file:
             data = json.load(file)  # Parse JSON data
     except json.JSONDecodeError:
         data = default_value
     except FileNotFoundError:
         data = default_value
-        with open(PATH_OF_DATA+file_path, 'w') as _:
+        with open(file_path, 'w') as _:
             pass
     return data
 
 
 def write_json_file(file_path, data):
-    with open(PATH_OF_DATA+file_path, 'w') as file:
+    with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
 
 
