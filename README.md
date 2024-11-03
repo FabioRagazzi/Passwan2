@@ -1,4 +1,5 @@
-# Passwan 2.0
+# Passwan 2.0 
+<img src="img/passwan2.ico" alt="folder" width="100">
 
 ## Installation on Windows
 ### Getting the code
@@ -14,17 +15,11 @@ Remember to check the option **add to PATH** during the installation process.
 Once you have python, you can download the code from this repository by clicking
 on the green button **Code** and selecting **Download ZIP**.
 
-You can also download the code using *git* by running on your terminal the commands:
-```
-cd <path/of/your/project>
-```
+You can also download the code using *git* by running on your terminal the command:
 ```
 git clone https://github.com/FabioRagazzi/Passwan2.git
 ```
 Please note that in order to do that you will need *git* installed on your computer.
-
-Also, be aware of the fact that `<path/of/your/project>` is a token, you need to replace it with
-the actual path of your project.
 
 To open your terminal you can:
 - Press **Windows** + **R**
@@ -34,39 +29,26 @@ To open your terminal you can:
 ### Creating the virtual environment
 Once you have the code on your machine, you will need to set up a python virtual environment,
 that is basically a folder with all the packages needed to run your code.
-You can do it by running on your terminal the following commands, one by one:
-```
-cd <path/of/your/project>
-```
-```
-python -m venv venv
-```
-```
-venv\Scripts\activate
-```
-```
-pip install customtkinter
-```
-```
-deactivate
-```
+You can do that by navigating inside the `code/` folder of the project and double-clicking 
+on the file `initial_set_up.bat`. This will open your terminal, create the virtual environment, install all the necessary
+python packages, and close the terminal once the operation is completed.
 
-At this point you can create a shortcut to the file `run.vbs` and place it wherever you like 
+### Running Passwan 2.0
+If you completed the above steps, you can launch the application just by double-clicking on the file `run.vbs`
+that is inside the folder `code/`.
+If you have an antivirus, it might complain about the execution of such file.
+
+
+If you were able to run the application, you could also create a shortcut to the file `run.vbs` and place it wherever you like 
 (usually you want to have it on your desktop).
 You can rename the shortcut and maybe even change the icon 
-(a good choice for the icon might be the file `passwan2.ico` that you have in this repository).
+(a good choice for the icon might be the file `passwan2.ico` that you have inside the folder `img/`).
 
 To change the icon of a file you need to:
 - Right-click on that file
 - Select **Properties** (maybe after having clicked on **Show more options**)
 - Click on **Change Icon...**
 - Browse your desired **.ico** file
-
-### Running Passwan 2.0
-If you completed the above steps, you can lunch the application just by double-clicking on the
-shortcut to the file `run.vbs` you previously created.
-
-If you have an antivirus, it might complain about the execution of such file.
 
 ## How to use Passwan
 ### Creating Characters Sets
@@ -121,30 +103,41 @@ whatever information you want.
 
 ### Json Mode
 The code can work in two different modes. The default mode will store your data
-inside some `.json` files. You can to specify the directory where those files will be saved (the default is
-the same directory of ypur project, and if you are happy with it, you can leave it like that).
+inside some `.json` files. You can specify the directory where those files will be saved (the default is
+the same directory of your project, inside the `code/` folder, and if you are happy with it, you can leave it like that).
 
 If you want to change the path, a good choice could be some directory with a back-up on the cloud 
-(for example with **OneDrive** or **Google Drive** or whatever).
-Once you have chosen your directory, copy its path and paste it (enclosed in quotation marks) in the file `Work_in_json_mode.py`
-after the equal sign that follows **PATH_OF_DATA**. You should obtain something like this:
-```python
-PATH_OF_DATA = "G:/My Drive/Mario/BackUp/Passwan Data/"
-```
-Note that the `/` character before closing the quotation marks is essential.
-Also note that the path provided above is completely fictional.
+(for example with **OneDrive** or **Google Drive** or whatever). To change the path, click on the 
+**Settings** button in the main window. Another screen will open, make sure that the option *JSON MODE* is selected,
+and then you will be able to browse your
+desired directory by clicking on the folder icon: 
 
+<img src="img/folder.png" alt="folder" width="100">
 
 ### DataBase Mode
 You can store the data needed for the application to work in a Firebase real time database.
-To do that you will need first to create a database, and then generate a certificate with your credentials. 
-Save the certificate in your computer and then paste its path in the file `Work_in_database_mode.py`.
-In the same file you will also need to paste the url of your database.
-This video [Firebase with Python](https://www.youtube.com/watch?v=BnrkTpgH5Vc) can help you to set up your database.
+To do that, you will first need to create a database.
 
-You will also need to replace the name ***Work_in_json_mode*** with 
-***Work_in_database_mode*** in the third row of the file `Functions.py`
-if you want to use the real time database.
+You can watch this video [Firebase with Python](https://www.youtube.com/watch?v=BnrkTpgH5Vc)
+to see how to do it. 
+In particular, you can watch:
+- 0:55 - 2:25 to learn how to set up the database
+and where to find the database url
+- 4:29 - 4:54 to see how you can generate a certificate (a `.json` file)
+with your private key to access the database
+
+You will need to save the certificate in your computer, in a place you will remember.
+Also, you will need the database url.
+
+To switch to database mode, click on the **Settings** button and a new window will open. 
+You will need to select the option *DATABASE MODE* and browse the 
+certificate file (that you previously downloaded) by clicking on the file icon: 
+
+<img src="img/file.png" alt="folder" width="100">
+
+
+In the same window you will also need to paste the url of your database.
+
 
 ## Advantages of Using Passwan 2.0
 Using Passwan 2.0, you will need to remember just one password, but at the same time
