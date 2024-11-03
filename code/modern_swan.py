@@ -725,7 +725,7 @@ customtkinter.set_default_color_theme("blue")
 
 root = customtkinter.CTk()
 root.title("PASSWAN")
-root.iconbitmap("img/passwan2.ico")
+root.iconbitmap("../img/passwan2.ico")
 root.resizable(False, False)
 
 # StringVars
@@ -736,9 +736,9 @@ json_folder_string_var = StringVar()
 certificate_path_string_var = StringVar()
 
 # Image
-eye_image = Image.open("img/eye.png")
-folder_image = Image.open("img/folder.png")
-file_image = Image.open("img/file.png")
+eye_image = Image.open("../img/eye.png")
+folder_image = Image.open("../img/folder.png")
+file_image = Image.open("../img/file.png")
 
 # Settings Row # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 Frame_settings = customtkinter.CTkFrame(root)
