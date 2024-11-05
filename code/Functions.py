@@ -42,6 +42,12 @@ def id_num_to_str(n):
 
 
 def text_to_state(text):
+    full_list = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f",
+                 "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+                 "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+                 "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "`", "~",
+                 "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "-", "+", "=", "{", "}",
+                 "[", "]", "|", ":", ";", "'", "<", ">", ",", ".", "?", "/"]
     # initializing output
     output_state = [[0, 0, 0, 0],
                     [0, 0, 0, 0],
@@ -51,7 +57,7 @@ def text_to_state(text):
     # converting text to ASCII value
     for j in range(4):
         for i in range(4):
-            output_state[i][j] = ord(text[4 * j + i])
+            output_state[i][j] = full_list.index(text[4*j + i])
 
     return output_state
 
