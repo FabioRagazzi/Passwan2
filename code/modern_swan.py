@@ -110,7 +110,9 @@ def apply_settings(window, num_radio_button, entry_url_text):
             SETTINGS["PATH_OF_JSON_DATA"] = json_folder_string_var.get() + "/"
 
     # CASE 2: Switched from JSON mode to DATABASE mode
-    if SETTINGS["MODE"] == "JSON" and num_radio_button == 2:
+    elif SETTINGS["MODE"] == "JSON" and num_radio_button == 2:
+        global PASSWORDS
+        global CHARACTERS_SETS
         global db_PASSWORDS
         global db_CHARACTERS_SETS
         try:
@@ -125,19 +127,41 @@ def apply_settings(window, num_radio_button, entry_url_text):
             messagebox.showerror("Error", str(e))
 
         if not error_flag:
-            # Move .json files to database
-            db_PASSWORDS.set(PASSWORDS)
-            db_CHARACTERS_SETS.set(CHARACTERS_SETS)
-            # Delete local .json files
-            os.remove(SETTINGS["PATH_OF_JSON_DATA"] + "PASSWORDS.json")
-            os.remove(SETTINGS["PATH_OF_JSON_DATA"] + "CHARACTERS_SETS.json")
-            # Update settings
-            SETTINGS["MODE"] = "DATABASE"
-            SETTINGS["PATH_OF_CERTIFICATE"] = certificate_path_string_var.get()
-            SETTINGS["DATABASE_URL"] = entry_url_text
+            if (db_PASSWORDS.get() is not None) or (db_CHARACTERS_SETS.get() is not None):
+                response = messagebox.askyesno("Attention!",
+                                               "Some data is already present in the selcted datbase.\n"
+                                               "Would you like to overwrite it?")
+                if response:  # Yes was selected
+                    # Move .json files to database
+                    db_PASSWORDS.set(PASSWORDS)
+                    db_CHARACTERS_SETS.set(CHARACTERS_SETS)
+                    # Delete local .json files
+                    os.remove(SETTINGS["PATH_OF_JSON_DATA"] + "PASSWORDS.json")
+                    os.remove(SETTINGS["PATH_OF_JSON_DATA"] + "CHARACTERS_SETS.json")
+                    # Update settings
+                    SETTINGS["MODE"] = "DATABASE"
+                    SETTINGS["PATH_OF_CERTIFICATE"] = certificate_path_string_var.get()
+                    SETTINGS["DATABASE_URL"] = entry_url_text
+                else:  # No was selected
+                    response2 = messagebox.askyesno("Attention!",
+                                                    "Would you like to keep the data in the "
+                                                    "database and start adding to it?")
+                    if response2:  # Yes was selected
+                        # Delete local .json files
+                        os.remove(SETTINGS["PATH_OF_JSON_DATA"] + "PASSWORDS.json")
+                        os.remove(SETTINGS["PATH_OF_JSON_DATA"] + "CHARACTERS_SETS.json")
+                        # Update settings
+                        SETTINGS["MODE"] = "DATABASE"
+                        SETTINGS["PATH_OF_CERTIFICATE"] = certificate_path_string_var.get()
+                        SETTINGS["DATABASE_URL"] = entry_url_text
+                        # Update PASSWORDS and CHARACTERS_SETS
+                        PASSWORDS = db_PASSWORDS.get()
+                        CHARACTERS_SETS = db_CHARACTERS_SETS.get()
+                    else:
+                        error_flag = 1
 
     # CASE 3: Switched from DATABASE mode to JSON mode
-    if SETTINGS["MODE"] == "DATABASE" and num_radio_button == 1:
+    elif SETTINGS["MODE"] == "DATABASE" and num_radio_button == 1:
         # Updating the settings
         SETTINGS["MODE"] = "JSON"
         SETTINGS["PATH_OF_JSON_DATA"] = json_folder_string_var.get() + "/"
@@ -149,7 +173,7 @@ def apply_settings(window, num_radio_button, entry_url_text):
         ref.delete()  # Deletes everything under the root node
 
     # CASE 4: Remained in DATABASE mode, but changed url or certificate
-    if SETTINGS["MODE"] == "DATABASE" and num_radio_button == 2:  # Remained in DATABASE mode
+    elif SETTINGS["MODE"] == "DATABASE" and num_radio_button == 2:  # Remained in DATABASE mode
         if (SETTINGS["PATH_OF_CERTIFICATE"] != certificate_path_string_var.get()) or \
                 (SETTINGS["DATABASE_URL"] != entry_url_text):  # but changed url or certificate
             error_flag = 1
